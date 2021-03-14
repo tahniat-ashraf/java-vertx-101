@@ -30,8 +30,20 @@ public class KeyValueController extends AbstractVerticle {
       .handler(LoggerHandler.create(LoggerFormat.DEFAULT));
 
     router
+      .route(HttpMethod.GET, "/keyValues/:key")
+      .handler(this::getKeyValue);
+
+    router
       .route(HttpMethod.GET, "/keyValues")
       .handler(this::getKeyValues);
+
+    router
+      .route(HttpMethod.DELETE,"/keyValues/:key")
+      .handler(this::deleteKeyValue);
+
+    router
+      .route(HttpMethod.POST,"/keyValues")
+      .handler(this::saveKeyValue);
 
     vertx
       .createHttpServer()
@@ -40,27 +52,49 @@ public class KeyValueController extends AbstractVerticle {
 
   }
 
-  private void getDemoReply(RoutingContext routingContext) {
+  private void saveKeyValue(RoutingContext routingContext) {
 
+    var jsonObject = routingContext.getBodyAsJson();
+    vertx
+    .eventBus()
+      .request(KeyValueServiceVerticle.SAVE_ADDRESS, jsonObject, messageAsyncResult ->
+        routingContext.response()
+          .putHeader("content-type", "application/json")
+          .end(Json.encodePrettily(messageAsyncResult.result().body()))
+      );  }
 
+  private void deleteKeyValue(RoutingContext routingContext) {
+    var key = routingContext.pathParam("key");
     vertx
       .eventBus()
-      .request(KeyValueDynamoVerticle.GET_LIST_ADDRESS, null, messageAsyncResult -> {
-
-
-        routingContext.response().end(Json.encodePrettily(messageAsyncResult.result().body().toString()));
-      });
+      .request(KeyValueServiceVerticle.DELETE_ADDRESS, key, messageAsyncResult ->
+        routingContext.response()
+          .putHeader("content-type", "application/json")
+          .end(Json.encodePrettily(messageAsyncResult.result().body()))
+      );
   }
 
 
+  private void getKeyValue(RoutingContext routingContext) {
+
+    var key = routingContext.pathParam("key");
+    vertx
+      .eventBus()
+      .request(KeyValueServiceVerticle.GET_ADDRESS, key, messageAsyncResult ->
+        routingContext.response()
+          .putHeader("content-type", "application/json")
+          .end(Json.encodePrettily(messageAsyncResult.result().body()))
+      );
+  }
+
   private void getKeyValues(RoutingContext routingContext) {
 
-    vertx.eventBus()
-      .request(KeyValueDynamoVerticle.GET_LIST_ADDRESS, new JsonObject(), messageAsyncResult -> {
-
-        System.out.println("messageAsyncResult.result().body() = " + messageAsyncResult.result().body());
-
-        routingContext.response().end(messageAsyncResult.result().body().toString());
-      });
+    vertx
+      .eventBus()
+      .request(KeyValueServiceVerticle.GET_LIST_ADDRESS, new JsonObject(), messageAsyncResult ->
+        routingContext.response()
+          .putHeader("content-type", "application/json")
+          .end(Json.encodePrettily(messageAsyncResult.result().body()))
+      );
   }
 }

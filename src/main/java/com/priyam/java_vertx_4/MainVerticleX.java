@@ -1,7 +1,7 @@
 package com.priyam.java_vertx_4;
 
 import com.priyam.java_vertx_4.dynamo.KeyValueController;
-import com.priyam.java_vertx_4.dynamo.KeyValueDynamoVerticle;
+import com.priyam.java_vertx_4.dynamo.KeyValueServiceVerticle;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 
@@ -18,7 +18,7 @@ public class MainVerticleX extends AbstractVerticle {
 //    vertx.deployVerticle(new Router1());
 //    vertx.deployVerticle(new StudentCrudVerticle());
 //    vertx.deployVerticle("com.priyam.java_vertx_4.client.DepartmentApiWebClient");
-    vertx.deployVerticle(new KeyValueDynamoVerticle());
+    vertx.deployVerticle(new KeyValueServiceVerticle());
     vertx.deployVerticle(new KeyValueController());
 
   }

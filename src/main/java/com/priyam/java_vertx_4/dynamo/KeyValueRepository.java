@@ -1,8 +1,10 @@
 package com.priyam.java_vertx_4.dynamo;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
+import software.amazon.awssdk.enhanced.dynamodb.model.PagePublisher;
 
 
 /**
@@ -18,20 +20,23 @@ public class KeyValueRepository extends AbstractDynamoRepository<KeyValue> {
 
   }
 
-  public Observable<KeyValue> getAllKeyValues() {
+  public PagePublisher<KeyValue> getAllKeyValues() {
 
-    return Observable.fromPublisher(findAllItems().items());
+    return findAllItems();
 
   }
 
-  public Observable<KeyValue> saveKeyValue(KeyValue keyValue) {
-    return Observable.fromFuture(saveItem(keyValue))
-      .map(aVoid -> keyValue);
+  public Completable saveKeyValue(KeyValue keyValue) {
+    return Completable.fromFuture(saveItem(keyValue));
   }
 
   public Single<KeyValue> getKeyValue(String key) {
 
     return Single.fromFuture(getItemWithPartitionKey(key));
+  }
+
+  public Observable<KeyValue> deleteKeyValue(KeyValue keyValue) {
+    return Observable.fromFuture(deleteItem(keyValue));
   }
 
 }
