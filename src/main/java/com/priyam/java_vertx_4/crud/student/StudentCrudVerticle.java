@@ -55,12 +55,34 @@ public class StudentCrudVerticle extends AbstractVerticle {
       .route(HttpMethod.DELETE, "/studentDelete")
       .handler(this::deleteStudent);
 
+    router
+      .route(HttpMethod.GET, "/studentGetDetailsByFirstName")
+      .handler(this::getDetailsByFirstName);
+
     vertx
       .createHttpServer()
       .requestHandler(router)
       .listen(4568);
 
 
+  }
+
+  private void getDetailsByFirstName(RoutingContext routingContext) {
+
+    var firstName = routingContext.queryParam("firstName").get(0);
+    Student s = null;
+
+    for (Student student : students) {
+      if (student.getFirstName().equalsIgnoreCase(firstName)) {
+        s = student;
+      }
+    }
+
+    routingContext
+      .response()
+      .setStatusCode(s==null?404:200)
+      .putHeader("content-type", "application/json")
+      .end(Json.encodePrettily(s));
   }
 
   private void deleteStudent(RoutingContext routingContext) {
