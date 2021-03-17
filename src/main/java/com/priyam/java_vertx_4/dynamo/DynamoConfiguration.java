@@ -24,7 +24,7 @@ public class DynamoConfiguration {
 
 
     return DynamoDbAsyncClient.builder()
-      .endpointOverride(URI.create("http://dynamodb.host:7569"))
+      .endpointOverride(URI.create("http://dynamodb.host:4566"))
       .region(Region.AP_SOUTHEAST_1)
       .build();
   }

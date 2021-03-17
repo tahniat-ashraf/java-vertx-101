@@ -71,6 +71,7 @@ public class KeyValueServiceVerticle extends AbstractVerticle {
 
   private <T> void getKeyValue(Message<T> tMessage) {
     keyValueRepository.getKeyValue(tMessage.body().toString())
+      .onErrorReturn(throwable -> KeyValue.builder().build())
       .subscribe(keyValue -> {
         var jsonObject = JsonObject.mapFrom(keyValue);
         tMessage.reply(jsonObject);
