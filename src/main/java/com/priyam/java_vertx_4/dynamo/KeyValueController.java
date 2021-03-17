@@ -94,7 +94,7 @@ public class KeyValueController extends AbstractVerticle {
       .request(KeyValueServiceVerticle.GET_LIST_ADDRESS, new JsonObject(), messageAsyncResult ->
         routingContext.response()
           .putHeader("content-type", "application/json")
-          .end(Json.encodePrettily(messageAsyncResult.result().body()))
+          .end((String) messageAsyncResult.result().body())
       );
   }
 }

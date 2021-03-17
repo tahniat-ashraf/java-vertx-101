@@ -18,8 +18,9 @@ public class MainVerticleX extends AbstractVerticle {
 //    vertx.deployVerticle(new Router1());
 //    vertx.deployVerticle(new StudentCrudVerticle());
 //    vertx.deployVerticle("com.priyam.java_vertx_4.client.DepartmentApiWebClient");
-    vertx.deployVerticle(new KeyValueServiceVerticle());
-    vertx.deployVerticle(new KeyValueController());
+    vertx.deployVerticle(new KeyValueServiceVerticle())
+      .onSuccess(s -> vertx.deployVerticle(new KeyValueController()))
+      .onSuccess(s -> startPromise.complete());
 
   }
 }

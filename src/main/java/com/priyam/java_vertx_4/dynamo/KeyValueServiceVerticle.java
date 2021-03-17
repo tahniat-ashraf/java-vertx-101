@@ -1,8 +1,11 @@
 package com.priyam.java_vertx_4.dynamo;
 
+
+import io.reactivex.Observable;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -20,25 +23,22 @@ public class KeyValueServiceVerticle extends AbstractVerticle {
   private DynamoConfiguration dynamoConfiguration;
 
   @Override
-  public void start(Promise<Void> startPromise) throws Exception {
+  public void start() throws Exception {
+
     dynamoConfiguration = new DynamoConfiguration();
     keyValueRepository = new KeyValueRepository("dev-paybill-key-value", dynamoConfiguration.getDynamoDBEnhancedClient());
 
-    vertx
-      .eventBus()
+    var eventBus = vertx.eventBus();
+    eventBus
       .consumer(KeyValueServiceVerticle.GET_ADDRESS, this::getKeyValue);
 
-    vertx
-      .eventBus()
+    eventBus
       .consumer(KeyValueServiceVerticle.GET_LIST_ADDRESS, this::getKeyValues);
 
-
-    vertx
-      .eventBus()
+    eventBus
       .consumer(KeyValueServiceVerticle.DELETE_ADDRESS, this::deleteKeyValue);
 
-    vertx
-      .eventBus()
+    eventBus
       .consumer(KeyValueServiceVerticle.SAVE_ADDRESS, this::saveKeyValue);
 
   }
@@ -60,13 +60,15 @@ public class KeyValueServiceVerticle extends AbstractVerticle {
   }
 
   private <T> void getKeyValues(Message<T> tMessage) {
-    keyValueRepository.getAllKeyValues()
-      .items()
-      .subscribe(keyValue -> {
-        System.out.println("keyValue = " + keyValue);
-        var jsonObject = JsonObject.mapFrom(keyValue);
-        tMessage.reply(jsonObject);
+
+    Observable.fromPublisher(keyValueRepository.findAllItems().items())
+      .toList()
+      .subscribe(tList -> {
+        System.out.println("tList = " + tList);
+        JsonArray jsonArray=new JsonArray(tList);
+        tMessage.reply(jsonArray.encodePrettily());
       });
+
   }
 
   private <T> void getKeyValue(Message<T> tMessage) {

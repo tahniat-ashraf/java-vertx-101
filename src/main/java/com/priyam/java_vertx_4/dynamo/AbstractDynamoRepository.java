@@ -80,7 +80,7 @@ public abstract class AbstractDynamoRepository<T> {
 
   public PagePublisher<T> findAllItems() {
 
-    return mappedTable.scan();
+    return mappedTable.scan(ScanEnhancedRequest.builder().consistentRead(true).build());
   }
 
   public CompletableFuture<T> deleteItem(T t) {
