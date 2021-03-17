@@ -10,14 +10,6 @@ public class MainVerticleX extends AbstractVerticle {
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
 
-//    vertx.deployVerticle(new Subscriber1X());
-//    vertx.deployVerticle(new Subscriber2X());
-//    vertx.deployVerticle(new P2PConsumer1X());
-//    vertx.deployVerticle(new P2PSenderX());
-//    vertx.deployVerticle(new PublisherX());
-//    vertx.deployVerticle(new Router1());
-//    vertx.deployVerticle(new StudentCrudVerticle());
-//    vertx.deployVerticle("com.priyam.java_vertx_4.client.DepartmentApiWebClient");
     vertx.deployVerticle(new KeyValueServiceVerticle());
     vertx.deployVerticle(new KeyValueController());
 
