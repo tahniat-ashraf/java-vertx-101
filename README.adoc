@@ -20,7 +20,10 @@ To run your application:
 ```
 ./mvnw clean compile exec:java
 ```
-
+To run docker :
+```
+docker-compose up --scale worker=4
+```
 == Help
 
 * https://vertx.io/docs/[Vert.x Documentation]

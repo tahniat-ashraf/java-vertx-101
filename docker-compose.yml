@@ -8,13 +8,27 @@ services:
     ports:
       - "4566:4566"
     environment:
-        - AWS_DEFAULT_REGION=ap-southeast-1
-        - EDGE_PORT=4566
-        - SERVICES=dynamodb
-        - DATA_DIR=/tmp/localstack/data
+      - AWS_DEFAULT_REGION=ap-southeast-1
+      - EDGE_PORT=4566
+      - SERVICES=dynamodb
+      - DATA_DIR=/tmp/localstack/data
 
     volumes:
       - java-vertx-4-datavolume:/tmp/localstack
+
+  master:
+    image: locustio/locust
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --master -H http://master:8089
+
+  worker:
+    image: locustio/locust
+    volumes:
+      - ./:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host master
 
   redis-master:
     container_name: java-vertx-4-redis-master
